@@ -137,11 +137,11 @@ extension XSRefreshFooter: View {
 
 public struct XSActivityView: View {
     public var body: some View {
-//        if #available(iOS 14.0, *) {
-//            ProgressView()
-//        } else {
+        if #available(iOS 14.0, *) {
+            ProgressView()
+        } else {
             ActivityIndicator(isAnimating: true, style: .medium)
-//        }
+        }
     }
     private struct ActivityIndicator: UIViewRepresentable {
         var isAnimating: Bool
