@@ -110,7 +110,7 @@ extension XSRefreshFooter: View {
                             Image(systemName: "arrow.down")
                                 .resizable(capInsets: EdgeInsets(top: 10, leading: 0, bottom: 0, trailing: 0))
                                 .frame(width: 15, height: 25)
-                                .rotationEffect(angle)
+                                .rotationEffect(-angle)
                                 .animation(.default, value: angle)
                         }
                         
