@@ -10,7 +10,7 @@ import Combine
 
 extension XSRefreshScrollView {
     public typealias HeaderScroll<T: View> = XSRefreshScrollView<Content, T, Footer>
-    public func customHeader<T: View>(_ state: Binding<XSRefreshState>, timeKey: String? = nil, action: @escaping () -> Void, label: @escaping (XSRefreshState, Date?) -> T) -> HeaderScroll<T> {
+    public func customHeader<T: View>(_ state: Binding<XSRefreshState>, timeKey: String? = nil, action: @escaping () -> Void, label: @escaping (XSRefreshState, Date?) -> T) -> HeaderScroll<T> { // 特别注意横向自定义 必须设定宽度
         HeaderScroll<T>(
             header: { state, date in XSRefreshComponent(type: .header) { label(state, date) } },
             headerAction: action,
