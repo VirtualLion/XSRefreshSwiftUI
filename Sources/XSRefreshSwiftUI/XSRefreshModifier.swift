@@ -7,16 +7,14 @@
 
 import SwiftUI
 
-struct XSRefreshModifier {
+struct XSRefreshModifier: ViewModifier {
+    let axes: Axis.Set
     let update: (GeometryProxy, XSRefreshKey.Value, Bool) -> Void
     private let scrollModel = _ScrollModel()
     private class _ScrollModel {
         var scroll: UIScrollView?
         var isDragging: Bool { scroll?.isDragging ?? false }
     }
-}
-
-extension XSRefreshModifier: ViewModifier {
     func body(content: Content) -> some View {
         GeometryReader { proxy in
             content
@@ -25,12 +23,13 @@ extension XSRefreshModifier: ViewModifier {
                     DispatchQueue.main.async { update(proxy, v, scrollModel.isDragging) }
                     return Color.clear
                 }
-                .background(XSRefreshGetScrollRepresentable { scrollModel.scroll = $0 })
+                .background(XSRefreshGetScrollRepresentable(axes: axes) { scrollModel.scroll = $0 })
         }
     }
 }
 
 struct XSRefreshGetScrollRepresentable: UIViewRepresentable {
+    let axes: Axis.Set
     var updateScroll: ((UIScrollView)->Void)?
     func makeUIView(context: Context) -> UIView {
         UIView()
@@ -39,7 +38,11 @@ struct XSRefreshGetScrollRepresentable: UIViewRepresentable {
         DispatchQueue.main.asyncAfter(deadline: .now()) {
             guard let viewHost = uiView.superview?.superview?.superview ?? uiView.superview?.superview, let sv = self.scrollView(root: viewHost) else { return }
             updateScroll?(sv)
-            sv.alwaysBounceVertical = true
+            if axes == .horizontal {
+                sv.alwaysBounceHorizontal = true
+            } else {
+                sv.alwaysBounceVertical = true
+            }
         }
     }
     private func scrollView(root: UIView) -> UIScrollView? {
@@ -65,5 +68,21 @@ struct XSRefreshSafeAreaShape: Shape {
         path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
         path.closeSubpath()
         return path
+    }
+}
+
+struct XSRefreshContentView<Content: View>: View {
+    let axes: Axis.Set
+    @ViewBuilder var content: () -> Content
+    var body: some View {
+        if axes == .horizontal {
+            HStack(spacing: 0) {
+                content()
+            }.frame(maxHeight: .infinity)
+        } else {
+            VStack(spacing: 0) {
+                content()
+            }.frame(maxWidth: .infinity)
+        }
     }
 }

@@ -38,6 +38,19 @@ public struct XSRefreshFooter {
     }
 }
 
+public struct XSRefreshTrailer {
+    let axes: Axis.Set
+    var state: XSRefreshState
+    var date: Date?
+    let type: XSRefreshComponentType
+    init(_ axes: Axis.Set, state: XSRefreshState, date: Date? = nil, type: XSRefreshComponentType = .header) {
+        self.axes = axes
+        self.state = state
+        self.date = date
+        self.type = type
+    }
+}
+
 extension XSRefreshComponent: View {
     var body: some View {
         label().frame(maxWidth: .infinity).xsRefreshAnchor(type)
@@ -77,6 +90,7 @@ extension XSRefreshHeader: View {
         }
         .padding()
         .lineLimit(1)
+        .edgesIgnoringSafeArea(.all)
     }
     private var dateStr: String {
         guard let date = date else { return "无记录" }
@@ -132,6 +146,54 @@ extension XSRefreshFooter: View {
         }
         .padding()
         .lineLimit(1)
+        .edgesIgnoringSafeArea(.all)
+    }
+}
+
+extension XSRefreshTrailer: View {
+    public var body: some View {
+        if axes == .horizontal {
+            content
+        } else {
+            if type == .header {
+                XSRefreshHeader(state: state, date: date)
+            } else {
+                XSRefreshFooter(state: state, type: type)
+            }
+        }
+    }
+    private var content: some View {
+        ZStack {
+            switch type {
+            case .header:
+                switch state {
+                case .refreshing: getText("正在刷新数据中")
+                case .pulling: getText("松开立即刷新")
+                case .endRefresh: getText("已经完成数据刷新")
+                default: getText("拖拽可以刷新")
+                }
+            case .footer_auto:
+                switch state {
+                case .noMoreData: getText("已经全部加载完毕")
+                case .refreshing: getText("正在加载更多的数据")
+                default: getText("点击或拖拽加载更多")
+                }
+            case .footer_back:
+                switch state {
+                case .noMoreData: getText("已经全部加载完毕")
+                case .endRefresh: getText("已经完成数据加载")
+                case .refreshing: getText("正在加载更多的数据")
+                case .pulling: getText("松开立即加载更多")
+                default: getText("拖拽可以加载更多")
+                }
+            default: EmptyView()
+            }
+        }
+        .frame(width: 50)
+        .edgesIgnoringSafeArea(.all)
+    }
+    private func getText(_ text: String) -> some View {
+        Text(text.map { String($0) }.joined(separator: "\n"))
     }
 }
 
