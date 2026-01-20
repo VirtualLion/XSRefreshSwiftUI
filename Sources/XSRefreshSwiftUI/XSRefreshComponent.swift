@@ -73,7 +73,7 @@ extension XSRefreshHeader: View {
                         .animation(.default, value: angle)
                 }
                 
-            }.frame(width: 30, height: 30)
+            }.frame(width: 30, height: 30).padding(.leading, -42)
             VStack(spacing: 12) {
                 if state == .endRefresh {
                     Text("已经完成数据刷新")
@@ -128,7 +128,7 @@ extension XSRefreshFooter: View {
                                 .animation(.default, value: angle)
                         }
                         
-                    }.frame(width: 30, height: 30)
+                    }.frame(width: 30, height: 30).padding(.leading, -42)
                     switch state {
                     case .endRefresh: Text("已经完成数据加载")
                     case .refreshing: Text("正在加载更多的数据...")
