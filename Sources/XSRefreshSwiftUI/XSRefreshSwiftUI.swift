@@ -24,3 +24,14 @@ public enum XSRefreshState: Equatable {
     /** 所有数据加载完毕，没有更多的数据了 */
     case noMoreData
 }
+
+extension Binding<XSRefreshState> {
+    @MainActor
+    public func endRefresh(noMore: Bool = false) {
+        DispatchQueue.main.asyncAfter(deadline: .now()+0.1) {
+            wrappedValue = noMore ? .noMoreData : .endRefresh
+        }
+    }
+}
+
+

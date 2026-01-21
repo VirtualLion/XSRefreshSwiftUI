@@ -23,13 +23,26 @@ struct XSRefreshModifier: ViewModifier {
                     DispatchQueue.main.async { update(proxy, v, scrollModel.isDragging) }
                     return Color.clear
                 }
-                .background(XSRefreshGetScrollRepresentable(axes: axes) { scrollModel.scroll = $0 })
         }
+        .modifier(XSRefreshGetScrollModifier { scroll in
+            if axes == .horizontal {
+                scroll.alwaysBounceHorizontal = true
+            } else {
+                scroll.alwaysBounceVertical = true
+            }
+            scrollModel.scroll = scroll
+        })
+    }
+}
+
+struct XSRefreshGetScrollModifier: ViewModifier  {
+    var getScroll: (UIScrollView) -> Void
+    func body(content: Content) -> some View {
+        content.background(XSRefreshGetScrollRepresentable { getScroll($0) })
     }
 }
 
 struct XSRefreshGetScrollRepresentable: UIViewRepresentable {
-    let axes: Axis.Set
     var updateScroll: ((UIScrollView)->Void)?
     func makeUIView(context: Context) -> UIView {
         UIView()
@@ -38,11 +51,6 @@ struct XSRefreshGetScrollRepresentable: UIViewRepresentable {
         DispatchQueue.main.asyncAfter(deadline: .now()) {
             guard let viewHost = uiView.superview?.superview?.superview ?? uiView.superview?.superview, let sv = self.scrollView(root: viewHost) else { return }
             updateScroll?(sv)
-            if axes == .horizontal {
-                sv.alwaysBounceHorizontal = true
-            } else {
-                sv.alwaysBounceVertical = true
-            }
         }
     }
     private func scrollView(root: UIView) -> UIScrollView? {

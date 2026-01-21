@@ -4,6 +4,7 @@ XSRefreshSwiftUI 是一个专为 SwiftUI 设计的下拉刷新和上拉加载组
 
 由于SwiftUI不能没有MJRefresh, 所以抽空写了这个项目。目前只是做了初步的功能样式实现，并未做充分测试以及性能方面的考虑。如遇问题或有优化想法欢迎提交。
 
+0.0.5 - 优化了endRefresh方式
 0.0.3 - 支持了横向拖拽的刷新和加载(特别注意: 横向自定义Header必须设定宽度)
 
 ## ✨ 特性
@@ -47,7 +48,7 @@ struct ContentView: View {
         // 模拟网络请求
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             items = ["Item 1", "Item 2", "Item 3"]
-            header = .endRefresh
+            $header.endRefresh()
             footer = .idle
         }
     }
@@ -55,7 +56,7 @@ struct ContentView: View {
         // 模拟网络请求
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             items += ["Item 1", "Item 2", "Item 3"]
-            footer = .endRefresh // 没用更多时使用  .noMoreData
+            $footer.endRefresh(noMore: false) // 没用更多时使用  .noMoreData
         }
     }
 }
