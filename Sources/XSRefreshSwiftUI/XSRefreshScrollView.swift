@@ -149,9 +149,9 @@ extension XSRefreshScrollView: View {
                 }
             }
         }
-        .id(id)
         .animation(headerState == .endRefresh ? .default : nil, value: headerPadding)
         .modifier(XSRefreshModifier(axes: axes, update: update))
+        .id(id)
     }
     
     private func update(proxy: GeometryProxy, value: XSRefreshKey.Value, isDragging: Bool) {

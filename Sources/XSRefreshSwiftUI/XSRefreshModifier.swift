@@ -25,6 +25,7 @@ struct XSRefreshModifier: ViewModifier {
                 }
         }
         .modifier(XSRefreshGetScrollModifier { scroll in
+            if scroll === scrollModel.scroll { return }
             if axes == .horizontal {
                 scroll.alwaysBounceHorizontal = true
             } else {
@@ -38,7 +39,11 @@ struct XSRefreshModifier: ViewModifier {
 struct XSRefreshGetScrollModifier: ViewModifier  {
     var getScroll: (UIScrollView) -> Void
     func body(content: Content) -> some View {
-        content.background(XSRefreshGetScrollRepresentable { getScroll($0) })
+        if let action = XSRefreshConfig.shared.getScrollAction {
+            action(content, getScroll)
+        } else {
+            content.background(XSRefreshGetScrollRepresentable { getScroll($0) })
+        }
     }
 }
 

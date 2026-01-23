@@ -9,6 +9,15 @@ import SwiftUI
 
 public enum XSRefresh {
     static var headerLastUpdatedTimeKey: String { "XSRefreshHeaderLastUpdatedTimeKey" }
+    public typealias GetScrollAction = ((any View, @escaping (UIScrollView) -> Void) -> AnyView)
+    @MainActor public static var getScrollAction: GetScrollAction? {
+        get { XSRefreshConfig.shared.getScrollAction }
+        set { XSRefreshConfig.shared.getScrollAction = newValue }
+    }
+}
+class XSRefreshConfig {
+    @MainActor public static let shared = XSRefreshConfig()
+    var getScrollAction: XSRefresh.GetScrollAction?
 }
 
 public enum XSRefreshState: Equatable {
@@ -33,5 +42,3 @@ extension Binding<XSRefreshState> {
         }
     }
 }
-
-

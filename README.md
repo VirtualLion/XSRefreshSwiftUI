@@ -4,8 +4,9 @@ XSRefreshSwiftUI 是一个专为 SwiftUI 设计的下拉刷新和上拉加载组
 
 由于SwiftUI不能没有MJRefresh, 所以抽空写了这个项目。目前只是做了初步的功能样式实现，并未做充分测试以及性能方面的考虑。如遇问题或有优化想法欢迎提交。
 
-- 0.0.5 - 优化了endRefresh方式
-- 0.0.3 - 支持了横向拖拽的刷新和加载(特别注意: 横向自定义Header必须设定宽度)
+- 0.0.6 - 支持搭配 SwiftUIIntrospect 使用
+- 0.0.5 - 优化了 endRefresh 方式
+- 0.0.3 - 支持了横向拖拽的刷新和加载(特别注意: 横向自定义 Header 必须设定宽度)
 
 ## ✨ 特性
 
@@ -65,13 +66,23 @@ struct ContentView: View {
 ### 进阶用法
 
 ```swift
-/// 监听 header footer 拖拽进度
+    /// 监听 header footer 拖拽进度
     .headerProgress(_ progress: Binding<Double>)
     .footerProgress(_ progress: Binding<Double>)
-/// 自定义样式
+    
+    /// 自定义样式
     .customHeader(...)
     .customAutoFooter(...)
     .customBackFooter(...)
+    
+    /// 自定义获取 UIScrollView 的方法
+    XSRefresh.getScrollAction = { content, getScroll in
+        AnyView(
+            content.introspect(.scrollView, on: .iOS(.v13, .v14, .v15, .v16, .v17, .v18, .v26)) { scrollView in
+                getScroll(scrollView)
+            }
+        )
+    }
 ```
 
 ## 🎯 刷新状态
